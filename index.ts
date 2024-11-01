@@ -6,6 +6,8 @@ type Options = {
 	minify?: boolean;
 	map?: boolean;
 	autoprefixer?: boolean;
+	import?: boolean;
+	nesting?: boolean;
 };
 
 export const tailwind = (settings: {
@@ -22,6 +24,8 @@ export const tailwind = (settings: {
 			minify = Bun.env.NODE_ENV === "production",
 			map = Bun.env.NODE_ENV !== "production",
 			autoprefixer = true,
+			import: isEnablingImport = false,
+			nesting: isEnablingNesting = false,
 		} = {},
 	} = settings;
 
@@ -36,6 +40,14 @@ export const tailwind = (settings: {
 
 			if (minify) {
 				plugins.push(require("cssnano")());
+			}
+
+			if (isEnablingImport) {
+				plugins.push(require("postcss-import")());
+			}
+
+			if (isEnablingNesting) {
+				plugins.push(require("postcss-nesting")());
 			}
 
 			return postcss(...plugins).process(sourceText, {
