@@ -32,7 +32,13 @@ export const tailwind = (settings: {
 	const result = Bun.file(source)
 		.text()
 		.then((sourceText) => {
-			const plugins = [tw(config)];
+			const plugins = [];
+
+			if (isEnablingImport) {
+				plugins.push(require("postcss-import")());
+			}
+
+			plugins.push(tw(config))
 
 			if (autoprefixer) {
 				plugins.push(require("autoprefixer")());
@@ -40,10 +46,6 @@ export const tailwind = (settings: {
 
 			if (minify) {
 				plugins.push(require("cssnano")());
-			}
-
-			if (isEnablingImport) {
-				plugins.push(require("postcss-import")());
 			}
 
 			if (isEnablingNesting) {
